@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "react-native-mw-1",
-    "slug": "react-native-mw-1",
+    "name": "MWMA",
+    "slug": "mwma-movies-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -9,9 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "bundleIdentifier": "com.mwaisegheware.mwma",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.mwaisegheware.mwma",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

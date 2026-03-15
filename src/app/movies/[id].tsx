@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { movieService } from '../../services/movieService';
 import { storage } from '../../services/storage';
 import { MovieDetails, Cast, Video } from '../../types/movie';
@@ -15,6 +16,7 @@ const { width } = Dimensions.get('window');
 export default function MovieDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [movie, setMovie] = useState<MovieDetails | null>(null);
   const [cast, setCast] = useState<Cast[]>([]);
   const [videos, setVideos] = useState<Video[]>([]);
@@ -46,7 +48,6 @@ export default function MovieDetailsScreen() {
   }, [id]);
 
   const handlePlayTrailer = async () => {
-    // Find the first official trailer on YouTube
     const trailer = videos.find(
       (v) => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')
     );
@@ -65,7 +66,7 @@ export default function MovieDetailsScreen() {
       await storage.removeFromWatchlist(movie.id);
       setIsSaved(false);
     } else {
-      await storage.addToWatchlist(movie as any); // Type cast for simpler storage
+      await storage.addToWatchlist(movie as any);
       setIsSaved(true);
     }
   };
@@ -81,56 +82,60 @@ export default function MovieDetailsScreen() {
   if (!movie) return null;
 
   return (
-    <ScrollView className="flex-1 bg-black" showsVerticalScrollIndicator={false}>
+    <ScrollView 
+      className="flex-1 bg-[#111]" 
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+    >
       {/* Header Image */}
-      <View className="relative" style={{ width, height: 500 }}>
+      <View className="relative" style={{ width, height: 450 }}>
         <Image
           source={`${IMAGE_BASE_URL}original${movie.backdrop_path || movie.poster_path}`}
           style={{ width: '100%', height: '100%' }}
           contentFit="cover"
+          transition={300}
         />
         <LinearGradient
-          colors={['rgba(0,0,0,0.5)', 'transparent', '#000']}
+          colors={['transparent', 'rgba(17,17,17,0.8)', '#111']}
           className="absolute inset-0"
         />
         
-        {/* Back Button */}
-        <TouchableOpacity 
-          onPress={() => router.back()}
-          className="absolute top-12 left-6 bg-black/50 p-2 rounded-full"
-        >
-          <Ionicons name="chevron-back" size={28} color="white" />
-        </TouchableOpacity>
-
         {/* Info Overlay */}
-        <View className="absolute bottom-0 p-6">
-          <Text className="text-white text-4xl font-black mb-2">{movie.title}</Text>
+        <View className="absolute bottom-0 p-6 w-full">
+          <Text className="text-white text-4xl font-black mb-3 leading-tight">{movie.title}</Text>
           <View className="flex-row items-center flex-wrap">
-            <Text className="text-gray-300 mr-4">{new Date(movie.release_date).getFullYear()}</Text>
-            <View className="bg-gray-800 px-2 py-1 rounded mr-4">
-              <Text className="text-gray-300 text-xs font-bold">{movie.status}</Text>
+            <Text className="text-gray-400 font-bold mr-4">{new Date(movie.release_date).getFullYear()}</Text>
+            <View className="bg-[#E50914] px-2 py-0.5 rounded mr-4">
+              <Text className="text-white text-[10px] font-black">{movie.status.toUpperCase()}</Text>
             </View>
-            <Text className="text-gray-300">{movie.runtime} min</Text>
+            <View className="flex-row items-center mr-4">
+              <Ionicons name="time-outline" size={14} color="#888" />
+              <Text className="text-gray-400 ml-1">{movie.runtime}m</Text>
+            </View>
+            <View className="flex-row items-center">
+              <Ionicons name="star" size={14} color="#FFD700" />
+              <Text className="text-gray-400 ml-1 font-bold">{movie.vote_average.toFixed(1)}</Text>
+            </View>
           </View>
         </View>
       </View>
 
       {/* Action Buttons */}
-      <View className="flex-row px-6 mb-8">
+      <View className="flex-row px-6 mb-8 -mt-2">
         <TouchableOpacity 
           onPress={handlePlayTrailer}
-          className="flex-1 bg-white h-12 rounded-lg flex-row items-center justify-center mr-4"
+          className="flex-1 bg-white h-14 rounded-xl flex-row items-center justify-center mr-4 shadow-lg active:opacity-80"
         >
           <Ionicons name="play" size={24} color="black" />
-          <Text className="text-black font-bold ml-2 text-lg">Play</Text>
+          <Text className="text-black font-black ml-2 text-lg">WATCH TRAILER</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           onPress={toggleWatchlist}
-          className="bg-gray-800 w-12 h-12 rounded-lg items-center justify-center"
+          className="bg-gray-800/80 w-14 h-14 rounded-xl items-center justify-center border border-gray-700 active:opacity-80"
         >
           <Ionicons 
             name={isSaved ? "bookmark" : "bookmark-outline"} 
-            size={24} 
+            size={26} 
             color={isSaved ? "#E50914" : "white"} 
           />
         </TouchableOpacity>
@@ -138,35 +143,41 @@ export default function MovieDetailsScreen() {
 
       {/* Overview */}
       <View className="px-6 mb-8">
-        <Text className="text-white text-lg leading-6 text-gray-300 mb-4">
-          {movie.overview}
-        </Text>
-        <View className="flex-row flex-wrap">
+        <View className="flex-row flex-wrap mb-4">
           {movie.genres.map((genre) => (
-            <View key={genre.id} className="bg-gray-900 px-3 py-1 rounded-full mr-2 mb-2">
-              <Text className="text-gray-400 text-xs">{genre.name}</Text>
+            <View key={genre.id} className="bg-gray-900 px-4 py-1.5 rounded-full mr-2 mb-2 border border-gray-800">
+              <Text className="text-gray-300 text-xs font-medium">{genre.name}</Text>
             </View>
           ))}
         </View>
+        <Text className="text-gray-400 text-base leading-7 font-normal">
+          {movie.overview}
+        </Text>
       </View>
 
       {/* Cast */}
-      <View className="mb-12">
-        <Text className="text-white text-xl font-bold px-6 mb-4">Top Cast</Text>
+      <View className="mb-4">
+        <View className="flex-row justify-between items-center px-6 mb-4">
+          <Text className="text-white text-xl font-black">Top Cast</Text>
+          <TouchableOpacity>
+            <Text className="text-[#E50914] font-bold">See All</Text>
+          </TouchableOpacity>
+        </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24 }}>
           {cast.map((person) => (
-            <View key={person.id} className="mr-6 items-center" style={{ width: 80 }}>
-              <View className="w-20 h-20 rounded-full overflow-hidden bg-gray-800 mb-2 border-2 border-gray-700">
+            <View key={person.id} className="mr-6 items-center" style={{ width: 85 }}>
+              <View className="w-20 h-20 rounded-full overflow-hidden bg-gray-900 mb-3 border-2 border-gray-800 shadow-md">
                 <Image
                   source={`${IMAGE_BASE_URL}w185${person.profile_path}`}
                   style={{ width: '100%', height: '100%' }}
                   contentFit="cover"
+                  transition={200}
                 />
               </View>
-              <Text className="text-white text-[10px] font-bold text-center mb-1" numberOfLines={1}>
+              <Text className="text-white text-[11px] font-bold text-center mb-1" numberOfLines={1}>
                 {person.name}
               </Text>
-              <Text className="text-gray-500 text-[9px] text-center" numberOfLines={1}>
+              <Text className="text-gray-500 text-[10px] text-center" numberOfLines={1}>
                 {person.character}
               </Text>
             </View>
