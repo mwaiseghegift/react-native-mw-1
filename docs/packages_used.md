@@ -42,3 +42,43 @@ This document lists the packages used in this project, along with their purposes
   ```bash
   npm install react-native-safe-area-context
   ```
+
+## @react-native-async-storage/async-storage
+
+- **Purpose**: Provides persistent, asynchronous, key-value storage for React Native apps. Useful for storing user data, settings, and caching.
+- **Usage**: Used to save and retrieve data locally on the device, such as user preferences or app state.
+- **Installation**: To install @react-native-async-storage/async-storage, you can use the following command:
+
+  ```bash
+  npm install @react-native-async-storage/async-storage
+  ```
+
+## @react-navigation/bottom-tabs
+
+- **Purpose**: Implements a bottom tab navigator for React Native apps, allowing easy navigation between screens using a tab bar.
+- **Usage**: Used to create a tab-based navigation UI at the bottom of the app, commonly seen in mobile apps.
+- **Installation**: To install @react-navigation/bottom-tabs, you can use the following command:
+
+  ```bash
+  npm install @react-navigation/bottom-tabs
+  ```
+
+## @react-navigation/elements
+
+- **Purpose**: Provides UI components and helpers for React Navigation, such as headers, backgrounds, and other navigation-related elements.
+- **Usage**: Used to customize navigation UI components and enhance the look and feel of navigation elements.
+- **Installation**: Already installed. To install manually:
+
+  ```bash
+  npm install @react-navigation/elements
+  ```
+
+## @react-navigation/native
+
+- **Purpose**: Core package for React Navigation, enabling navigation between screens and handling navigation state in React Native apps.
+- **Usage**: Used as the foundation for navigation, required for all navigation setups (stack, tabs, drawer, etc.).
+- **Installation**: Already installed. To install manually:
+
+  ```bash
+  npm install @react-navigation/native
+  ```
